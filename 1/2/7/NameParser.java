@@ -1,38 +1,44 @@
-import java.util.Arrays;
+import java.util.ArrayList;
 public class NameParser {
-    public static void main(String[] args) {
-        String fullName = "David Daniel Debunki";
-        String[] parts = new String[3]; 
-        // int lastIdx = 0;
+    static void parse(String fullName){
+        ArrayList<String> parts = new ArrayList<>(); 
         char space = ' ';
-        // int idx = fullName.indexOf(space); // finds next instance of ' '
         int idx = 0;
-        int strIdx = 0;
-        // kinda reminds me of a linked list. also loop could be restructred as recursive.
-        while (true){
+        // kinda reminds me of a linked list. also loop could be restructred as recursive function very easily.
+        while (true){ // ArrayList<String> recursive(ArrayList<String> parts,int idx);
             int nextIdx = fullName.indexOf(space,idx+1);  // finds next instance of ' ' after the current.
-            System.out.println(Arrays.toString(parts));
-            System.out.printf("-- new iter --\ncurrent: %d\nnext: %d\nparts: %s\n",idx,nextIdx,Arrays.toString(parts));
+
             if (nextIdx == -1) {
-                parts[strIdx] = fullName.substring(idx); // gets string from last occurance of ' ' to EOS. exit branch.
-                break;
+                parts.add(fullName.substring(idx+1)); // gets string from last occurance of ' ' to EOS. exit branch.
+                break; // return parts;
             }else{
-               parts[strIdx] = fullName.substring(idx,nextIdx); // gets string between two ' '
-                // System.out.println(fullName.substring(idx,nextIdx));
-                strIdx++;
-                idx=nextIdx; // sets next as current
+               parts.add(fullName.substring(idx+1,nextIdx)); // gets string between two ' '
+                idx=nextIdx; // sets next as current  // recursive(parts,nextIdx)
             }
         }
         // not sure if it wants from me when it says "labels", variables? or just printing, ill do printing,
         // but i know how to do the other ofc.
-        // will explode if not a full name assignment doesnt care though!.
-        int sum = parts[0].length()+parts[1].length()+parts[2].length();
-        String middleStr;
-        if (parts.length()<3){
-            middle = String.format("middle: %s",parts[1]);
+        // int sum = parts[0].length()+parts[1].length()+parts[2].length();
+
+        
+        // [String] -> [Integer] -> [int] -> int
+        int sum = parts.stream().map( (a) -> a.length() ).mapToInt( (a) -> a ).sum(); // now i feel at home (rust-like functional chain)
+          // if i had to make this super extensible i wouldve done it differently. but this is fine.
+        if (parts.size() == 2 ){ // if no middle
+       
+           System.out.printf("first: %s\nlast: %s\ntotal chars: %d\n",parts.get(0),parts.get(1),sum);
         }else{
-            middle = "";
+            
+             System.out.printf("first: %s\nmiddle: %s\nlast: %s\ntotal chars: %d\n",parts.get(0),parts.get(1),parts.get(2),sum);
+            
         }
-        System.out.printf("first: %s\nmiddle: %s\nlast: %s\ntotal chars: %d\n",parts[0],parts[1],parts[2],sum);
+    }
+    public static void main(String[] args) {
+        // with middle
+        parse("David Daniel Debunki");
+        System.out.println();
+        // without middle
+        parse("Emmanuel dubois");
     }
 }
+

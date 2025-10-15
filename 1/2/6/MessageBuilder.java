@@ -1,3 +1,6 @@
+/*
+    demonstrates basic string concatentation.
+*/
 public class MessageBuilder {
 
     // thought this was gonna be like, wrap an inner string and expose a .push() or smth but no. its literally just concat.

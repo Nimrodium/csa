@@ -8,8 +8,7 @@
       enumerate :: [a] -> [(a,Int)]
       enumerate x = x `zip` [0..]
       next :: Maybe Int
-      -- next = ' ' `elemIndex` (i `drop` name)
-      next = elemIndex ' ' name -- gets next occurance of ' ' 
+      next = elemIndex ' ' name -- gets next occurance of ' '
     in
       case next of
         Just nx -> let

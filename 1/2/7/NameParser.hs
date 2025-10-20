@@ -12,14 +12,10 @@
     in
       case next of
         Just nx -> let
-              -- nx = nx
-              substring = [x | (x,n) <- enumerate name,n<=nx]
+              substring = take (nx+1) name
             in
               parse (drop (nx+1) name) (builder ++ [substring])
-        Nothing -> let
-            substring = [x | (x,n) <- enumerate name]
-          in
-            builder ++ [substring]
+        Nothing -> builder ++ [name]
 
   parseName :: String -> [String]
   parseName name = parse name []

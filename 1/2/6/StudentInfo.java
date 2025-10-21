@@ -28,5 +28,5 @@ public class StudentInfo {
     public static void main(String[] args) {
         Student student = new Student("Alex Johnson", 11, 3.85, true);
         System.out.println(student);
-    }
+   }
 }

@@ -12,8 +12,8 @@ public class NameParser {
                 parts.add(fullName.substring(idx+1)); // gets string from last occurance of ' ' to EOS. exit branch.
                 break; // return parts;
             }else{
-               parts.add(fullName.substring(idx+1,nextIdx)); // gets string between two ' '
-                idx=nextIdx; // sets next as current  // recursive(parts,nextIdx)
+                 parts.add(fullName.substring(idx+1,nextIdx)); // gets string between two ' '
+                 idx=nextIdx; // sets next as current  // recursive(parts,nextIdx)
             }
         }
         // not sure if it wants from me when it says "labels", variables? or just printing, ill do printing,
@@ -22,8 +22,8 @@ public class NameParser {
 
         
         // [String] -> [Integer] -> [int] -> int
-        int sum = parts.stream().map( (a) -> a.length() ).mapToInt( (a) -> a ).sum(); // now i feel at home (rust-like functional chain)
-          // if i had to make this super extensible i wouldve done it differently. but this is fine.
+        int sum = parts.stream().map( (a) -> a.length() ).mapToInt( (a) -> a ).sum();
+         // if i had to make this super extensible i wouldve done it differently. but this is fine.
         if (parts.size() == 2 ){ // if no middle
        
            System.out.printf("first: %s\nlast: %s\ntotal chars: %d\n",parts.get(0),parts.get(1),sum);

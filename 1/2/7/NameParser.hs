@@ -12,15 +12,17 @@
     in
       case next of
         Just nx -> let
-              substring = take (nx+1) name
+              -- nx = nx+2
+              substring = take nx name
             in
               parse (drop (nx+1) name) (builder ++ [substring])
         Nothing -> builder ++ [name]
 
   parseName :: String -> [String]
   parseName name = parse name []
-  charCount :: [String] -> Int
-  charCount listS = sum [length s | s <- listS ]
+  -- charCount :: [String] -> Int
+  -- charCount listS = sum [length s | s <- listS ]
+  charCount listS = sum (map length listS)
   main :: IO()
   main =
     let

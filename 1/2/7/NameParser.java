@@ -3,7 +3,7 @@ public class NameParser {
     static void parse(String fullName){
         ArrayList<String> parts = new ArrayList<>(); 
         char space = ' ';
-        int idx = 0;
+        int idx = -1;
         // kinda reminds me of a linked list. also loop could be restructred as recursive function very easily.
         while (true){ // ArrayList<String> recursive(ArrayList<String> parts,int idx);
             int nextIdx = fullName.indexOf(space,idx+1);  // finds next instance of ' ' after the current.

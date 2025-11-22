@@ -1,5 +1,4 @@
 /*
-
 Create a program called PasswordValidator that checks if a password meets minimum security requirements. Your program should check if a password meets at least three of the following criteria:
 Contains at least 8 characters
 Contains at least one uppercase letter
@@ -14,58 +13,43 @@ import java.util.stream.Stream;
 
 class PasswordValidator {
 
-    static final int totalCriteria = 4;
-
     static Stream<Character> stringToCharIter(String s) {
         return s.codePoints().mapToObj(i -> (char) i);
     }
 
-    // print checkpoint and inc counter in a functional style because im like that
-    static int passedCheck(String checkName, int n) {
-        n++;
-        System.out.printf(
-            "passed %s check [%d/%d]\n",
-            checkName,
-            n,
-            totalCriteria
-        );
-        return n;
-    }
-
-    static boolean validatePassword(String passwd) {
-        System.out.printf("testing %s\n", passwd);
-        int criteriaCount = 0;
+    static int validatePassword(String passwd) {
+        int strength = 0;
         if (passwd.length() < 8) {
-            System.err.println("password less than 8 characters");
-            return false;
-        }
-        criteriaCount = passedCheck("length", criteriaCount);
+            System.err.printf("%s less than 8 characters\n", passwd);
+        } else strength += 1;
+        // using 4 seperate if statements to test each criteria. using streamapi to generate the boolean efficiently
         if (!stringToCharIter(passwd).anyMatch(Character::isUpperCase)) {
-            System.err.println(
-                "password does not contain an upper case character"
+            System.err.printf(
+                "%s does not contain an upper case character\n",
+                passwd
             );
-            return false;
-        }
-        criteriaCount = passedCheck("uppercase", criteriaCount);
+        } else strength += 1;
         if (!stringToCharIter(passwd).anyMatch(Character::isLowerCase)) {
-            System.err.println(
-                "password does not contain a lower case character"
+            System.err.printf(
+                "%s does not contain a lower case character\n",
+                passwd
             );
-            return false;
-        }
-        criteriaCount = passedCheck("lowercase", criteriaCount);
+        } else strength += 1;
         if (!stringToCharIter(passwd).anyMatch(Character::isDigit)) {
-            System.err.println("password does not contain a digit");
-            return false;
+            System.err.printf("%s does not contain a digit\n", passwd);
+        } else strength += 1;
+
+        String strengthStr;
+        if (strength < 3) {
+            strengthStr = "weak";
+        } else {
+            strengthStr = "strong";
         }
-        criteriaCount = passedCheck("digit", criteriaCount);
-        System.out.printf("%s passes all password requirements\n", passwd);
-        return true;
+        System.out.printf("%s password strength: %s\n", passwd, strengthStr);
+        return strength;
     }
 
     public static void main(String[] args) {
-        // String password = "MyP@ss123"; // test with different passwords
-
         new ArrayList<>(
             Arrays.asList(
                 "MyP@ss123",

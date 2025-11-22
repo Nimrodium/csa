@@ -26,7 +26,7 @@ class GameElibility {
       // i wrote that before i realized its asking for every level it qualifies for,
       // so now im just gonna push to a vec
       
-      if (this.age >= 500 && this.age >= 16){
+      if (this.score >= 500 && this.age >= 16){
         this.levels.add(Level.ADVANCED);
       } if (this.isPremiumMember && this.score >= 300){
         this.levels.add(Level.PREMIUM);
@@ -43,7 +43,8 @@ class GameElibility {
     }
     @Override
     public String toString(){
-      return String.format("player age: %d\nplayer score: %d\nis a premium member: %b\neligable tournaments: %s",this.age,this.score,this.isPremiumMember,this.levels);
+      return String.format("player age: %d\nplayer score: %d\nis a premium member: %b\neligable tournaments: %s\n",
+      this.age,this.score,this.isPremiumMember,this.levels);
     }
   }
     public static void main(String[] args){

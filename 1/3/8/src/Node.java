@@ -11,13 +11,13 @@ import java.util.function.Function;
 public class Node {
 
     private final String header = "-----------------\n";
-    // int id;
+
     String content;
     ArrayList<Path> children;
     // lambda to find when the node should be unlocked
     // requiresHook -> True when Unlocked
     Optional<Function<Context, Boolean>> requiresHook;
-    // lambda to find when
+    // lambda to produce side effects to the Context
     Optional<Consumer<Context>> onEnterHook;
 
     private Node(
@@ -32,6 +32,7 @@ public class Node {
         this.onEnterHook = onEnterHook;
     }
 
+    // would make more sense to make this toString, but it feels too specific for that.
     public String display(Context context) {
         // this.children.stream().enumerate().map((a,i) -> a.display(context,i)) but NO ENUMERATE OR EVEN ZIP FUNCTION
         // look at how much code is needed to replicate my beautiful functional pipeline oneliner...
@@ -56,6 +57,7 @@ public class Node {
     }
 
     // Core function of the game engine, this evaluates the Node function, applied to Context, and recurses down the tree until a terminal node.
+    // recursive evaluation of the Node tree using Context as the mutable state.
     public Context execute(Context context) {
         System.out.println(this.display(context));
         this.onEnterHook.ifPresent(fn -> fn.accept(context));
@@ -79,22 +81,18 @@ public class Node {
             }
             var selection = context.querySelection(allowed);
 
-            return this.children.get(selection).child.execute(context); // recurse into child}
+            return this.children.get(selection).child.execute(context); // recurse into child
         } else return context; // recursive return
     }
 
-    // entrypoint wrapper for tree evaluation.
+    // entrypoint wrapper for tree evaluation. sets up Context.
     // Context is returned just so that it can be recovered, eg. if state wants to be saved. else it would be dropped at the end of the tree.
     public Context init() {
         Context context = new Context();
         return this.execute(context);
     }
 
-    public record Path(
-        String content,
-        Node child
-        // Optional<Consumer<Context>> onSelectHook
-    ) {
+    public record Path(String content, Node child) {
         boolean isUnlocked(Context context) {
             return this.child.requiresHook.isPresent()
                 ? this.child.requiresHook.get().apply(context)
@@ -104,7 +102,9 @@ public class Node {
         String display(Context context, String label) {
             return new StringBuilder()
                 .append(
-                    this.isUnlocked(context) ? ("[" + label + "]") : "[LOCKED]"
+                    this.isUnlocked(context)
+                        ? ("\n[" + label + "]")
+                        : "[LOCKED]"
                 )
                 .append("| ")
                 .append(this.content)
@@ -113,6 +113,7 @@ public class Node {
         }
     }
 
+    // declarative builder for node.
     public static class NodeBuilder {
 
         String content = "";

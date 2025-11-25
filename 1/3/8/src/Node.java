@@ -1,13 +1,16 @@
+// src/Node.java
 package src;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class Node {
 
-    private final String header = "-----------------";
+    private final String header = "-----------------\n";
     // int id;
     String content;
     ArrayList<Path> children;
@@ -15,17 +18,31 @@ public class Node {
     // requiresHook -> True when Unlocked
     Optional<Function<Context, Boolean>> requiresHook;
     // lambda to find when
-    Optional<Function<Context, Void>> onEnterHook;
+    Optional<Consumer<Context>> onEnterHook;
 
-    String display(Context context) {
+    private Node(
+        String content,
+        ArrayList<Path> children,
+        Optional<Function<Context, Boolean>> requiresHook,
+        Optional<Consumer<Context>> onEnterHook
+    ) {
+        this.content = content;
+        this.children = children;
+        this.requiresHook = requiresHook;
+        this.onEnterHook = onEnterHook;
+    }
+
+    public String display(Context context) {
         // this.children.stream().enumerate().map((a,i) -> a.display(context,i)) but NO ENUMERATE OR EVEN ZIP FUNCTION
         // look at how much code is needed to replicate my beautiful functional pipeline oneliner...
-        String paths;
         ArrayList<String> displayedChildren = new ArrayList<String>();
         StringBuilder childrenString = new StringBuilder();
         for (int i = 0; i < this.children.size(); i++) {
             var a = this.children.get(i);
-            var displayed = a.display(context, Integer.valueOf(i).toString());
+            var displayed = a.display(
+                context,
+                Integer.valueOf(i + 1).toString()
+            );
             displayedChildren.add(displayed);
             childrenString.append(this.header + displayed);
         }
@@ -33,15 +50,50 @@ public class Node {
         return new StringBuilder()
             .append(this.header)
             .append(this.content)
+            .append("\n")
             .append(childrenString)
             .toString();
     }
 
+    // Core function of the game engine, this evaluates the Node function, applied to Context, and recurses down the tree until a terminal node.
+    public Context execute(Context context) {
+        System.out.println(this.display(context));
+        this.onEnterHook.ifPresent(fn -> fn.accept(context));
+
+        if (this.children.size() > 0) {
+            // generate unlocked map
+            List<Boolean> allowed = this.children.stream()
+                .map(p -> p.isUnlocked(context))
+                .toList();
+            if (allowed.stream().allMatch(b -> b == false)) {
+                System.out.println(
+                    "All Options locked, cannot continue. Press any button to acknoledge and exit."
+                );
+                context.anyKey();
+                return context;
+            }
+            if (this.children.size() == 1) {
+                // implicitly because lock check passed this means that the single option is true
+                context.anyKey();
+                return this.children.get(0).child.execute(context);
+            }
+            var selection = context.querySelection(allowed);
+
+            return this.children.get(selection).child.execute(context); // recurse into child}
+        } else return context; // recursive return
+    }
+
+    // entrypoint wrapper for tree evaluation.
+    // Context is returned just so that it can be recovered, eg. if state wants to be saved. else it would be dropped at the end of the tree.
+    public Context init() {
+        Context context = new Context();
+        return this.execute(context);
+    }
+
     public record Path(
         String content,
-        // int child,
-        Node child,
-        Optional<Consumer<Context>> onSelectHook
+        Node child
+        // Optional<Consumer<Context>> onSelectHook
     ) {
         boolean isUnlocked(Context context) {
             return this.child.requiresHook.isPresent()
@@ -58,6 +110,43 @@ public class Node {
                 .append(this.content)
                 .append(" |")
                 .toString();
+        }
+    }
+
+    public static class NodeBuilder {
+
+        String content = "";
+        ArrayList<Path> children = new ArrayList<>();
+        Optional<Function<Context, Boolean>> requiresHook = Optional.empty();
+        Optional<Consumer<Context>> onEnterHook = Optional.empty();
+
+        public NodeBuilder(String content) {
+            this.content = content;
+        }
+
+        public NodeBuilder content(String content) {
+            this.content = content;
+            return this;
+        }
+
+        public NodeBuilder children(Path... paths) {
+            // this.children = new ArrayList<>(Arrays.asList(paths));
+            this.children.addAll(Arrays.asList(paths));
+            return this;
+        }
+
+        public NodeBuilder requires(Function<Context, Boolean> lambda) {
+            this.requiresHook = Optional.of(lambda);
+            return this;
+        }
+
+        public NodeBuilder onEnter(Consumer<Context> lambda) {
+            this.onEnterHook = Optional.of(lambda);
+            return this;
+        }
+
+        public Node build() {
+            return new Node(content, children, requiresHook, onEnterHook);
         }
     }
 }

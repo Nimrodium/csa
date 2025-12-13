@@ -6,6 +6,7 @@ import src.Context;
 import src.Node;
 import src.Node.NodeBuilder;
 import src.Node.Path;
+import src.Node;
 
 /*
     -- Documentation --
@@ -31,22 +32,38 @@ import src.Node.Path;
 class Main {
 
     public static void main(String[] args) {
-        new NodeBuilder("Hi i am the root node")
-            .branch(
-                new Path(
-                    "this is a terminal selection",
-                    new NodeBuilder("i am terminal").build()
-                ),
-                new Path(
-                    "this is a locked node",
-                    new NodeBuilder("i am locked")
-                        .requires(ctx -> ctx.has("impossible attribute"))
-                        .build()
-                )
-            )
-            .build()
-            .init();
+        // new NodeBuilder("Hi i am the root node")
+        //     .branch(
+        //         new Path(
+        //             "this is a terminal selection",
+        //             new NodeBuilder("i am terminal")
+        //         ),
+        //         new Path(
+        //             "this is a locked node",
+        //             new NodeBuilder("i am locked").requires(ctx ->
+        //                 ctx.has("impossible attribute")
+        //             )
+        //         )
+        //     )
+        //     .build()
+        //     .init();
 
-        new NodeBuilder("Ah, youre finally awake.")
+        var story =  Node.root(new NodeBuilder("FUCK").next(
+        "Ah, you're finally awake.",
+        "How are you?",
+        "Are you good?",
+        "I am worried about you...",
+        "Youre gambling addiction has gotten worse..."
+        ).branch(new Path(
+            "SHUT UP I HATE YOU!!!!",
+            new NodeBuilder().next(new String[] {"this is concerning...", "youre getting more hostile...","goodbye."},),
+        ),
+        new Path(
+            "yes. i have a problem.",
+            new NodeBuilder("thank you for recognizing that.")
+        )
+    )).build();
+    System.out.println(story.content);
+    story.init();
     }
 }

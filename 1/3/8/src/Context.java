@@ -1,6 +1,7 @@
 // src/Context.java
 package src;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -11,10 +12,10 @@ import java.util.Scanner;
 public class Context {
 
     Scanner sc;
-    HashMap<String, Integer> store;
+    HashMap<String, String> store;
 
     public Context() {
-        this.store = new HashMap<String, Integer>();
+        this.store = new HashMap<String, String>();
         this.sc = new Scanner(System.in);
     }
 
@@ -22,15 +23,15 @@ public class Context {
         return this.store.containsKey(attr);
     }
 
-    public Optional<Integer> get(String attr) {
+    public Optional<String> get(String attr) {
         if (this.store.containsKey(attr)) {
             // (this.store.get(attr))
             return Optional.of(this.store.get(attr));
         } else return Optional.empty();
     }
 
-    public void give(String attr, Optional<Integer> value) {
-        this.store.put(attr, value.isPresent() ? value.get() : 0);
+    public void give(String attr, Optional<String> value) {
+        this.store.put(attr, value.isPresent() ? value.get() : "");
     }
 
     public void take(String attr) {
@@ -55,5 +56,22 @@ public class Context {
 
     void anyKey() {
         sc.next();
+    }
+
+    String getUserInput() {
+        return sc.nextLine();
+    }
+
+    String getUserInput(String... acceptedStrings) {
+        while (true) {
+            var resp = sc.nextLine();
+            if (
+                Arrays.asList(acceptedStrings)
+                    .stream()
+                    .anyMatch(elem -> elem.equals(resp))
+            ) {
+                return resp;
+            } else System.out.println("try again.");
+        }
     }
 }

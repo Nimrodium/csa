@@ -32,38 +32,15 @@ import src.Node;
 class Main {
 
     public static void main(String[] args) {
-        // new NodeBuilder("Hi i am the root node")
-        //     .branch(
-        //         new Path(
-        //             "this is a terminal selection",
-        //             new NodeBuilder("i am terminal")
-        //         ),
-        //         new Path(
-        //             "this is a locked node",
-        //             new NodeBuilder("i am locked").requires(ctx ->
-        //                 ctx.has("impossible attribute")
-        //             )
-        //         )
-        //     )
-        //     .build()
-        //     .init();
-
-        var story =  Node.root(new NodeBuilder("FUCK").next(
-        "Ah, you're finally awake.",
-        "How are you?",
-        "Are you good?",
-        "I am worried about you...",
-        "Youre gambling addiction has gotten worse..."
-        ).branch(new Path(
-            "SHUT UP I HATE YOU!!!!",
-            new NodeBuilder().next(new String[] {"this is concerning...", "youre getting more hostile...","goodbye."},),
-        ),
-        new Path(
-            "yes. i have a problem.",
-            new NodeBuilder("thank you for recognizing that.")
+        Node.series("ah, youre finally awake.", "did you sleep well?", "personally i slept... very well.")
+        .after(Node.node("so, tell me how your sleep was?")
+        .branch(
+            Node.path("it was awful",
+                Node.series("OH NO!","thats awful indeed!")
+                .after(Node.node("end."))
+            ),
+            Node.path("it was delightful", Node.series("thats quite wonderful!").after("end"))
         )
-    )).build();
-    System.out.println(story.content);
-    story.init();
+    ).build().init();
     }
 }

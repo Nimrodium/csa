@@ -55,7 +55,7 @@ public class Context {
     }
 
     void anyKey() {
-        sc.next();
+        sc.nextLine();
     }
 
     String getUserInput() {

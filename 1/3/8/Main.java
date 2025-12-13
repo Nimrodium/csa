@@ -21,7 +21,7 @@ import src.Node.Path;
     the program introduces mutability with the Context container, which exposes simple key-value pairs to the tree as it is being evaluated,
     hooks are to be used to access and modify this state in order to conditionally lock nodes. Context is threaded through all evaluation functions.
 
-    in functional programming terms, the evaluation of the node tree is simply applying the recursive Node.execute() function to a Context monad,
+    in functional programming terms, the evaluation of the node tree is simply applying the recursive Node.execute() function to Context,
     with the resulting Context being the aggegation of all applications of every scene chosen by the player. this allows for easy serialization of the game state
     if desired, and makes adding new inputs into the node function trivial.
 

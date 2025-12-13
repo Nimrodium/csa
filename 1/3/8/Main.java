@@ -32,7 +32,7 @@ class Main {
 
     public static void main(String[] args) {
         new NodeBuilder("Hi i am the root node")
-            .children(
+            .branch(
                 new Path(
                     "this is a terminal selection",
                     new NodeBuilder("i am terminal").build()
@@ -46,5 +46,7 @@ class Main {
             )
             .build()
             .init();
+
+        new NodeBuilder("Ah, youre finally awake.")
     }
 }

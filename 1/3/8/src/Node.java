@@ -119,7 +119,7 @@ public class Node {
         String content = "";
         ArrayList<Path> children = new ArrayList<>();
         Optional<Function<Context, Boolean>> requiresHook = Optional.empty();
-        Optional<Consumer<Context>> onEnterHook = Optional.empty();
+        Optional<Consumer<Context>> onEnterHook = Optional.empty()447589;
 
         public NodeBuilder(String content) {
             this.content = content;
@@ -129,8 +129,9 @@ public class Node {
             this.content = content;
             return this;
         }
+        public NodeBuilder(){}
 
-        public NodeBuilder children(Path... paths) {
+        public NodeBuilder branch(Path... paths) {
             // this.children = new ArrayList<>(Arrays.asList(paths));
             this.children.addAll(Arrays.asList(paths));
             return this;
@@ -146,8 +147,21 @@ public class Node {
             return this;
         }
 
+        public NodeBuilder next(String... contents) {
+            var nodes = List.of(contents).reversed().stream().map(c -> new NodeBuilder(c)).reduce(new NodeBuilder, n -> {
+
+            });
+
+                // .toArray();
+        }
+
         public Node build() {
             return new Node(content, children, requiresHook, onEnterHook);
         }
     }
 }
+// NodeBuilder("hi").next("youre finally awake.").next("how are you...").branch(new Path("1",new NodeBuilder("")))
+// NodeBuilder("hi").next("youre finally awake", "how are you...", "are you fine")
+// fold list into NodeBuilder with nested child objects
+
+// foldr list by generating a nodebuilder and then building it, then next value append node, build it, ..., if empty acc then then root, just new nodebuilder content build. if not empty then new, append, build.

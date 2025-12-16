@@ -20,6 +20,7 @@ public class Node {
     Optional<Function<Context, Boolean>> requiresHook;
     // lambda to produce side effects to the Context
     Optional<Consumer<Context>> onEnterHook;
+
     private Node(
         String content,
         List<ResolvedPath> children,
@@ -35,15 +36,11 @@ public class Node {
     // would make more sense to make this toString, but it feels too specific for that.
     public String display(Context context) {
         // this.children.stream().enumerate().map((a,i) -> a.display(context,i)) but NO ENUMERATE OR EVEN ZIP FUNCTION
-        // look at how much code is needed to replicate my beautiful functional pipeline oneliner...
-        // var displayedChildren = new ArrayList<String>();
         StringBuilder childrenString = new StringBuilder();
         for (int i = 0; i < this.children.size(); i++) {
             var a = this.children.get(i);
-            var displayed = a.display(context,
-                Integer.toString(i + 1)
-            );
-            // displayedChildren.add(displayed);
+            var displayed = a.display(context, Integer.toString(i + 1));
+
             childrenString
                 // .append(Node.header)
                 .append(displayed);
@@ -56,18 +53,28 @@ public class Node {
             .append(childrenString)
             .toString();
     }
-    private Context recurseIntoUserSelection(Context context,List<Boolean> allowed){
-        return this.children.get(context.querySelection(allowed)).child.evaluate(context);
+
+    private Context recurseIntoUserSelection(
+        Context context,
+        List<Boolean> allowed
+    ) {
+        return this.children.get(
+            context.querySelection(allowed)
+        ).child.evaluate(context);
     }
-    private Context recurseIntoOnlyChild(Context context){
+
+    private Context recurseIntoOnlyChild(Context context) {
         return this.children.get(0).child.evaluate(context);
     }
-    private void show(Context context){
+
+    private void show(Context context) {
         System.out.println(this.display(context));
     }
-    private boolean hasOneChild(){
+
+    private boolean hasOneChild() {
         return this.children.size() == 1;
     }
+
     // Core function of the game engine, this evaluates the Node function, applied to Context, and recurses down the tree until a terminal node.
     // recursive evaluation of the Node tree using Context as the mutable state.
     public Context evaluate(Context context) {
@@ -75,9 +82,10 @@ public class Node {
         if (!this.children.isEmpty()) {
             // generate unlocked map
             var allowed = this.children.stream()
-                .map(p -> p.isUnlocked(context)).toList();
+                .map(p -> p.isUnlocked(context))
+                .toList();
             boolean cannotContinue = allowed.stream().noneMatch(a -> a);
-            if (cannotContinue){
+            if (cannotContinue) {
                 this.show(context);
                 System.out.println(
                     "All Options locked, cannot continue. Press any button to acknoledge and exit."
@@ -85,56 +93,20 @@ public class Node {
                 context.anyKey();
                 return context;
             }
-            if (this.hasOneChild()){
+            if (this.hasOneChild()) {
                 // if (!this.content.isEmpty()) this.show(context);
                 // return this.recurseIntoOnlyChild(context);
-                if (this.content.isEmpty()){
+                if (this.content.isEmpty()) {
                     return this.recurseIntoOnlyChild(context);
-                }else{
+                } else {
                     this.show(context);
                     context.anyKey();
                     return this.recurseIntoOnlyChild(context);
                 }
-            }else{
+            } else {
                 this.show(context);
                 return this.recurseIntoUserSelection(context, allowed);
             }
-            // else if (this.content.isEmpty()){
-            //     if (this.hasOneChild()){
-            //         this.recurseIntoOnlyChild(context);
-            //     }else{
-            //     }
-            // }
-            // else if (!this.content.isEmpty()){
-            //     this.show(context);
-            // } else {
-            //     if (this.children.size() == 1){
-            //         context.anyKey();
-            //         return this.recurseIntoOnlyChild(context);
-            //     }else{
-            //         System.out.println(this.display(context));
-            //         // this.children.get(context.querySelection(allowed.toList())).child.execute(context);
-            //         return this.recurseIntoUserSelection(context, allowed.toList());
-            //     }
-            // }
-            
-            // if (allowed.stream().allMatch(b -> b == false)) {
-            // if (cannotContinue){
-            //     System.out.println(
-            //         "All Options locked, cannot continue. Press any button to acknoledge and exit."
-            //     );
-            //     context.anyKey();
-            //     return context;
-            // }
-            // if (this.children.size() == 1) {
-            //     // implicitly because lock check passed this means that the single option is true
-            //     // if (!this.content.equals("")) context.anyKey(); // if no content message, immediately recurse.
-            //     context.anyKey();
-            //     return this.children.get(0).child.execute(context);
-            // }
-            // var selection = context.querySelection(allowed.toList());
-
-            // return this.children.get(selection).child.execute(context); // recurse into child
         } else return context; // recursive exit condition
     }
 
@@ -154,10 +126,9 @@ public class Node {
 
     public record ResolvedPath(String content, Node child) {
         boolean isUnlocked(Context context) {
-            return this.child.requiresHook.map(fn -> fn.apply(context)).orElse(true);
-            // return this.child.requiresHook.i;
-                // ? this.child.requiresHook.get().apply(context)
-                // : true;
+            return this.child.requiresHook.map(fn -> fn.apply(context)).orElse(
+                true
+            );
         }
 
         String display(Context context, String label) {
@@ -173,49 +144,57 @@ public class Node {
                 .toString();
         }
     }
+
     // Node.series(""...).after(Node.node("", "")) -> NodeBuilder
     // i hate java so much
     // this is essentially a partially applied function because java doesnt support varargs at the front.
-    public static Series series(String... contents){
+    public static Series series(String... contents) {
         return new Series(contents);
     }
-    public static record Series(String[] contents){
-        public NodeBuilder after(NodeBuilder node ){
-            return new NodeBuilder().next(List.of(contents),node);
+
+    public static record Series(String[] contents) {
+        public NodeBuilder after(NodeBuilder node) {
+            return new NodeBuilder().next(List.of(contents), node);
         }
-        public NodeBuilder after(String content){
+
+        public NodeBuilder after(String content) {
             return new NodeBuilder(content);
         }
     }
 
-
     // wrapper to decrease verbosity
-    public static NodeBuilder node(){
+    public static NodeBuilder node() {
         return new NodeBuilder();
     }
-    public static NodeBuilder node(String content){
+
+    public static NodeBuilder node(String content) {
         return new NodeBuilder(content);
     }
-    public static Path path(String pathEntry, NodeBuilder tail){
-        return new Path(pathEntry,tail);
+
+    public static Path path(String pathEntry, NodeBuilder tail) {
+        return new Path(pathEntry, tail);
     }
-    public static NodeBuilder node(String content, Path... paths){
+
+    public static NodeBuilder node(String content, Path... paths) {
         return new NodeBuilder(content).branch(paths);
     }
-    public static Path node(String pathEntry,String content, Path... paths){
+
+    public static Path node(String pathEntry, String content, Path... paths) {
         // return new Path(pathEntry, new NodeBuilder(content).branch(paths));
         return new Path(pathEntry, new NodeBuilder(content).branch(paths));
     }
-    
+
     // silentNode is meant just for side-effects.
-    public static NodeBuilder silentNode(){
+    public static NodeBuilder silentNode() {
         return new NodeBuilder("");
     }
+
     // public static Path path(String content, ){
 
     // }
     // declarative builder for node.
     public static class NodeBuilder {
+
         String content = "";
         ArrayList<Path> children = new ArrayList<>();
         Optional<Function<Context, Boolean>> requiresHook = Optional.empty();
@@ -223,7 +202,7 @@ public class Node {
 
         // @Override
         // public toString(){
-            
+
         // }
 
         public NodeBuilder(String content) {
@@ -242,7 +221,8 @@ public class Node {
             this.children.addAll(Arrays.asList(paths));
             return this;
         }
-        public NodeBuilder addSingle(Path path){
+
+        public NodeBuilder addSingle(Path path) {
             this.branch(path);
             return this;
         }
@@ -256,16 +236,19 @@ public class Node {
             this.onEnterHook = Optional.of(lambda);
             return this;
         }
-        public NodeBuilder next(NodeBuilder next){
-            this.children.add(new Path(Node.NEXT_TEXT,next));
+
+        public NodeBuilder next(NodeBuilder next) {
+            this.children.add(new Path(Node.NEXT_TEXT, next));
             return this;
         }
-        public NodeBuilder next(String content,NodeBuilder next){
+
+        public NodeBuilder next(String content, NodeBuilder next) {
             var child = new NodeBuilder(content);
 
-            this.children.add(new Path(Node.NEXT_TEXT,child.next(next)));
+            this.children.add(new Path(Node.NEXT_TEXT, child.next(next)));
             return this;
         }
+
         public NodeBuilder next(List<String> contents, NodeBuilder next) {
             if (contents.isEmpty()) {
                 return this; // no op
@@ -303,9 +286,3 @@ public class Node {
         }
     }
 }
-// NodeBuilder("hi").next("youre finally awake.").next("how are you...").branch(new Path("1",new NodeBuilder("")))
-// NodeBuilder("hi").next("youre finally awake", "how are you...", "are you fine")
-// fold list into NodeBuilder with nested child objects
-
-// foldr list by generating a nodebuilder and then building it, then next value append node, build it, ..., if empty acc then then root, just new nodebuilder content build. if not empty then new, append, build.
-// with addition of ResolvedPath (runtime path), i can now return just an alias to the last nodebuilder. yes.

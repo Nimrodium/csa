@@ -1,11 +1,5 @@
 // Main.java
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.IntStream;
-import src.Context;
-import src.Node;
-import src.Node.NodeBuilder;
-import src.Node.Path;
+import java.util.Optional;
 import src.Node;
 
 /*
@@ -29,6 +23,10 @@ import src.Node;
     By using an immutable and declarative format it makes defining the actual story much easier, as the NodeBuilder acts like it´s own mini DSL.
     despite being so overengineered, it is actually quite a small program, at only ~164 lines of code excluding the game definition.
 */
+// after disagree track, user has to adventure through a small minigame to find a key, 
+// then kill ME. gabreil ultrakill style, two endings, death and win.
+// after agree track, user has to escape me ranting about linux. if you do not have the linux attribute, 
+// if you fail to escape you will rot forever, if you escape, you win. if you also use linux, you sit there forever gleefully.
 class Main {
 
     public static void main(String[] args) {
@@ -42,5 +40,65 @@ class Main {
             Node.path("it was delightful", Node.series("thats quite wonderful!").after("end"))
         )
     ).build().init();
+
+    var agree = Node.series("thats awesome!",
+    "what languages do you prefer?",
+        Node.path("i prefer languages like C, where im very close to the hardware",
+            Node.node("ah interesting!, do you do your development on Windows or Linux?",
+                Node.path("i develop on Windows",
+                 Node.node("on that is quite odd").onEnter(ctx -> ctx.give("OS",Optional.of("Windows"))),
+                ),
+                Node.path("i develop on Linux",
+                    Node.node("thats what i expected").onEnter(ctx -> ctx.give("OS",Optional.of("Linux"))),
+                ),
+            ),
+        ),
+        Node.path("i prefer very high level dynamically typed languages like Python",
+            Node.series("eh...",
+            "python is very powerful but you can shoot yourself in the foot unless you really enforce static typing",
+            "and that kind of defeats the point of python eh?"
+            ).after(
+
+            ),
+        ),
+        Node.path("i prefer strict languages that ensure no errors ever get through, like Rust.",
+            Node.series("oh me too!", "Rust really is one of the best languages",
+            "but the borrow checker can get very annoying when working with explicit lifetimes.").after(
+
+            ),
+        ),
+        Node.path("i prefer quirky languages that aren't very practical but cool to think about, like haskell or elixir",
+            Node.series("yup, i understand that lmao.",
+            "im trying to learn haskell and its very fun",
+            "but the Monad syntax is very confusing","whats a =>>???").after(
+
+            ),
+        ),
+    );
+
+    var disagree = Node.series("wow",
+     "wow...",
+     "WOW...",
+     "YOU",
+     "You are what is wrong with programming",
+     "how... DARE you."
+    ).after(Node.node(
+        "so tell me, GigaOOPLover? what do you love SOO much about java",
+        Node.path("i love the verbosity",Node.series(
+                "why would you even think that.",
+                "the verbosity present in java is incredibly awful??",
+                "all modern languages arent THIS verbose"
+            ).after()
+        ),
+        Node.path("i love the concept of setters/getters"),
+        Node.path("i love how tuples aren't included.")
+    ));
+
+    Node.series("i hate java...","its level of gigaOOP is so annoying")
+        .after(Node.node("do you agree", 
+        Node.node("yes", "im so glad you feel that way."), 
+        Node.path("no, i love gigaOOP", )
+
+        );
     }
 }

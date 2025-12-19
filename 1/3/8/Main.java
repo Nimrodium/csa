@@ -1,7 +1,7 @@
 // Main.java
 import java.util.Optional;
 import src.Node;
-
+import src.Node.NodeBuilder;
 /*
     -- Documentation --
         I am well aware this is excessively overengineered but I wanted to do this for fun,
@@ -30,17 +30,29 @@ import src.Node;
 class Main {
 
     public static void main(String[] args) {
-        Node.series("ah, youre finally awake.", "did you sleep well?", "personally i slept... very well.")
-        .after(Node.node("so, tell me how your sleep was?")
-        .branch(
-            Node.path("it was awful",
-                Node.series("OH NO!","thats awful indeed!")
-                .after(Node.node("end."))
+    NodeBuilder linuxRant = Node.series("anyways, i love linux, its so cool!",
+    "its awesome to just be able to control your own computer just the way you want it.", 
+    "and especially the reproducability of nixos.", 
+    "nixos is just so awesome."
+    ).after(
+        Node.node().branch(
+            Node.node().requires(ctx -> ctx.isValue("OS","Linux")).next(
+                Node.node("you said you use Linux yeah? what distro do you use?")
             ),
-            Node.path("it was delightful", Node.series("thats quite wonderful!").after("end"))
-        )
-    ).build().init();
-
+            Node.node().requires(ctx -> ctx.isValue("OS","Windows")).next(
+                Node.series("you filthy windows users are honestly VILE").after(escape)
+            ),
+            Node.node().requires(ctx -> ctx.isValue("OS","macOS")).next(
+                Node.series("yknow macos is like linux.","its a unix operating system based off of freebsd","and freebsd is just like linux").after(escape)
+            )
+    ));
+    var escape = Node.node("> you have to escape, you cant bare listen to this guy ramble for any longer\nhow do you escape?",
+        Node.node("run. run as fast as you can",Node.node("you run for a while, you can hear him yell \"HEY! YOU SHOULD REALLY CONSIDER LINUX\"").next(),
+        Node.node("maybe you can trick him",
+            
+        ),  
+    );
+    var opening = Node.node("you come across an opening, to the left is a locked door, to the right is ")
     var agree = Node.series("thats awesome!",
     "what languages do you prefer?",
         Node.path("i prefer languages like C, where im very close to the hardware",
@@ -51,6 +63,7 @@ class Main {
                 Node.path("i develop on Linux",
                     Node.node("thats what i expected").onEnter(ctx -> ctx.give("OS",Optional.of("Linux"))),
                 ),
+                Node.path("i develop on macOS",Node.node("ew...").onEnter(ctx -> ctx.give("OS",Optional.of("macOS"))).next(linuxRant))
             ),
         ),
         Node.path("i prefer very high level dynamically typed languages like Python",
@@ -96,9 +109,10 @@ class Main {
 
     Node.series("i hate java...","its level of gigaOOP is so annoying")
         .after(Node.node("do you agree", 
-        Node.node("yes", "im so glad you feel that way."), 
-        Node.path("no, i love gigaOOP", )
+        Node.node("yes", agree), 
+        Node.path("no, i love gigaOOP",disagree)
 
-        );
+        )
+    );
     }
 }

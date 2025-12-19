@@ -34,6 +34,11 @@ public class Context {
         this.store.put(attr, value.isPresent() ? value.get() : "");
     }
 
+    public boolean isValue(String key, String value){
+        var attr = this.get(key);
+        return attr.map(v -> v == value).orElse(false);
+    }
+
     public void take(String attr) {
         this.store.remove(attr);
     }

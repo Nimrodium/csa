@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class Node {
 
@@ -97,6 +98,7 @@ public class Node {
                 // if (!this.content.isEmpty()) this.show(context);
                 // return this.recurseIntoOnlyChild(context);
                 if (this.content.isEmpty()) {
+                    // System.out.println("skipping this node");
                     return this.recurseIntoOnlyChild(context);
                 } else {
                     this.show(context);
@@ -107,7 +109,11 @@ public class Node {
                 this.show(context);
                 return this.recurseIntoUserSelection(context, allowed);
             }
-        } else return context; // recursive exit condition
+        } else {
+            // tail condition 
+            this.show(context);
+            return context;
+        } 
     }
 
     // entrypoint wrapper for tree evaluation. sets up Context.
@@ -121,6 +127,10 @@ public class Node {
     public record Path(String content, NodeBuilder child) {
         ResolvedPath build() {
             return new ResolvedPath(this.content, this.child.build());
+        }
+        public Path next(NodeBuilder node) {
+            this.child.next(node);
+            return this;
         }
     }
 
@@ -136,11 +146,11 @@ public class Node {
                 .append(
                     this.isUnlocked(context)
                         ? ("\n[" + label + "]")
-                        : "[LOCKED]"
+                        : "\n[LOCKED]"
                 )
-                .append("| ")
+                // .append("")
                 .append(this.content)
-                .append(" |")
+                // .append("")/
                 .toString();
         }
     }
@@ -158,7 +168,8 @@ public class Node {
         }
 
         public NodeBuilder after(String content) {
-            return new NodeBuilder(content);
+            // return new NodeBuilder(content);
+            return this.after(Node.node(content));
         }
     }
 
@@ -166,7 +177,7 @@ public class Node {
     public static NodeBuilder node() {
         return new NodeBuilder();
     }
-
+    
     public static NodeBuilder node(String content) {
         return new NodeBuilder(content);
     }
@@ -178,7 +189,6 @@ public class Node {
     public static NodeBuilder node(String content, Path... paths) {
         return new NodeBuilder(content).branch(paths);
     }
-
     public static Path node(String pathEntry, String content, Path... paths) {
         // return new Path(pathEntry, new NodeBuilder(content).branch(paths));
         return new Path(pathEntry, new NodeBuilder(content).branch(paths));
@@ -241,7 +251,9 @@ public class Node {
             this.children.add(new Path(Node.NEXT_TEXT, next));
             return this;
         }
-
+        public NodeBuilder lazyNext(Supplier<NodeBuilder> node){
+            return node.get();
+        }   
         public NodeBuilder next(String content, NodeBuilder next) {
             var child = new NodeBuilder(content);
 

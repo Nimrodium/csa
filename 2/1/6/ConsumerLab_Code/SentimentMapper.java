@@ -6,7 +6,7 @@ import java.util.ArrayList;
 /**
  * Class that contains helper methods for the Review Lab
  **/
-public class Review {
+public class SentimentMapper {
   
   private static HashMap<String, Double> sentiment = new HashMap<String, Double>();
   private static ArrayList<String> posAdjectives = new ArrayList<String>();

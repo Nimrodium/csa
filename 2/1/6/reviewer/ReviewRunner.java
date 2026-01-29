@@ -1,3 +1,4 @@
+package reviewer;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -5,7 +6,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-
+import reviewer.SentimentMapper;
 class ReviewRunner {
   static class Review{
     List<Double> inner;

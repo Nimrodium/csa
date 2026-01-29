@@ -37,46 +37,41 @@ public class StringAlgorithm {
             .chars()
             .mapToObj(c -> (char) c)
             .map(c ->
-                targetChars.contains(c)
+                targetChars.contains(Character.toLowerCase(c))
                     ? targetChars.get(
                           (int) (Math.random() * targetChars.size())
                       )
                     : c
             )
             .map(String::valueOf)
-            .collect(Collectors.joining())
-            .toString();
+            .collect(Collectors.joining());
         System.out.println("dyslexic: " + dyslexic);
     }
 
     // using low level ascii manipulation because fun!
     // everything here is derived just from the ascii table, no prior knowledge
     static char toLowercase(char c){
-        // if c is in range of 'A'..'Z' then c+(c-'a'); now its lowercase
         if ('A'<=c && c<='Z'){
             int ci = (int)c;
-            int ai = (int)'a';
-            return (char)(ci+(ci-ai));
+            int offset = (int)'a'-(int)'A';
+            return (char)(ci+offset);
         }else{    
             return c;
         }
     }
-    // static List<Integer> frequencyMap(){
-    //     return 
-    
     static List<Integer> findFrequency(String str){
         List<Integer> map = IntStream.generate(() -> 0).limit(26).boxed().collect(Collectors.toList());
         for (char c:str.toCharArray()){
-            int i = ((int)toLowercase(c))-((int)'a');
-            map.set(i++, map.get(i));
+            // get index of character in alphabet by casting to int and subtracting 'a' offset
+            int index = ((int)toLowercase(c))-((int)'a'); 
+            map.set(index, map.get(index)+1);
         }
         return map;
     }
     static void anagramChecker(String s1,String s2) {
         if (s1.length() != s2.length()){
             System.err.printf("%s and %s are not anagrams\n",s1,s2);
-        }
-        if (findFrequency(s1).equals(findFrequency(s2))){
+        }else if (findFrequency(s1).equals(findFrequency(s2))){
             System.out.printf("%s and %s are anagrams!",s1,s2);
         }else{
             System.err.printf("%s and %s are not anagrams\n",s1,s2);
@@ -84,6 +79,9 @@ public class StringAlgorithm {
     }
 
     public static void main(String[] args) {
-        // removeEveryOther();
+        removeEveryOther("computer");
+        removeVowels("louis");
+        dyslexiaSim("dumb dumb dumb");
+        anagramChecker("listen", "silent");
     }
 }

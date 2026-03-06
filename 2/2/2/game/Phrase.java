@@ -16,4 +16,7 @@ public class Phrase {
     private String phrase;
     private ArrayList<Character> guessedCharacters;
 
+    public Phrase(String phrase){
+        this.phrase = phrase;
+    }
 }

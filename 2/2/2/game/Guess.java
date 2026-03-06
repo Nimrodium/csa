@@ -28,9 +28,9 @@ public class Guess {
     }
     private String guess;
     public Variant variant;
-    public Guess ask(){
+    public Guess ask(){   
         String prompt = "guess a character or complete the phrase";
-        return new Guess();
+        return new Guess(GetInput.get(prompt));
     }
     private Guess(String guess){
         this.guess = guess;

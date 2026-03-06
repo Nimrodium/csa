@@ -1,0 +1,37 @@
+enum Guess:
+	Character (char c);
+	Phrase (String s); 
+	+ enter() -> Guess;
+	- new(String s) -> Guess;
+	- new(char c) -> Guess;
+
+class Phrase:
+	- String phrase;
+	- [char] guessedCharacters;
+	
+	+ new(String phrase) -> Phrase;
+	+ render() -> String;
+	+ guess(Guess g) -> bool;
+	+ isSolved() -> bool;
+
+class Player:
+	- int score;
+	- String name;
+	+ prompt() -> String;
+	+ new(String name) -> Player;
+	+ incScore() -> ();
+	+ getScore() -> int;
+	+ getName() -> String;
+class Game:
+	- Phrase phrase;
+	- [String] phrases;
+	- [Player] players;
+	
+	+ new() -> Game;
+	+ loop() -> ();
+	- step() -> ();
+	- prompt() -> Guess;
+	- newPhrase() -> Phrase;
+	- topPlayer() -> Player;
+	
+	

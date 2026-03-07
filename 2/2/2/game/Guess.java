@@ -1,14 +1,15 @@
 package game;
+
 /*
 enum Guess:
 	Character (char c);
-	Phrase (String s); 
+	Phrase (String s);
 	+ enter() -> Guess;
 	- new(String s) -> Guess;
 	- new(char c) -> Guess;
 */
 
-/* i designed the UML diagram thinking i could make a fielded enum, eg. 
+/* i designed the UML diagram thinking i could make a fielded enum, eg.
 enum Guess {
     Character(char c),
     Phrase(String s),
@@ -22,33 +23,44 @@ switch (guess.variant){
 */
 
 public class Guess {
-    enum Variant{
+
+    enum Variant {
         CHARACTER,
         PHRASE,
     }
+
     private String guess;
     public Variant variant;
-    public Guess ask(){   
+
+    public static Guess ask() {
         String prompt = "guess a character or complete the phrase";
         return new Guess(GetInput.get(prompt));
     }
-    private Guess(String guess){
+
+    private Guess(String guess) {
         this.guess = guess;
+        if (guess.length() == 1) {
+            this.variant = Variant.CHARACTER;
+        } else {
+            this.variant = Variant.PHRASE;
+        }
     }
-    public char getCharacter() throws IllegalStateException{
-        if (!this.variant.equals(Variant.CHARACTER)){
+
+    public char getCharacter() throws IllegalStateException {
+        if (!this.variant.equals(Variant.CHARACTER)) {
             throw new IllegalStateException(
                 "Guess is not a character, variant must be matched before calling getCharacter"
             );
         }
         return this.guess.charAt(0);
     }
+
     public String getCompletePhrase() throws IllegalStateException {
-        if (!this.variant.equals(Variant.PHRASE)){
+        if (!this.variant.equals(Variant.PHRASE)) {
             throw new IllegalStateException(
                 "Guess is not a complete phrase, variant must be matched before calling getCompletePhrase"
             );
         }
         return this.guess;
-    } 
+    }
 }

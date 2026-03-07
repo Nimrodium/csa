@@ -143,7 +143,15 @@ public class SentimentMapper {
     return negAdjectives.get(index);
     
   }
-  
+  private static boolean CSVFirstKeyContains(ArrayList<String> list,String str){
+    return list.stream().map(s -> s.split(",")[0]).anyMatch(s -> s.equals(str));
+  }
+  public static boolean isPositiveAdjective(String s){
+    return CSVFirstKeyContains(posAdjectives, s);
+  }
+  public static boolean isNegativeAdjective(String s){
+    return CSVFirstKeyContains(negAdjectives, s);
+  }
   /** 
    * Randomly picks a positive or negative adjective and returns it.
    */
